@@ -13,7 +13,10 @@
       <li class=" text-yellow-100 pb-4"> {{ movie.opening_crawl }} </li>
     </ul>
   </div>
-  
+  <img class="flex justify-center object-cover w-96" v-show="loading" src="../../public/Lightsaber-Progress-Bar.webp" alt="Gif loading">
+  <h1 v-show="error">Error</h1>
+
+
 </template>
 
 <script>
@@ -23,6 +26,8 @@ export default {
   data() {
     return {
       films: [],
+      loading: false,
+      error: false,
     };
   },
   mounted() {
@@ -30,12 +35,23 @@ export default {
   },
   methods: {
     getFilms() {
-      console.log("getting film...");
-      fetch(`https://swapi.dev/api/films/`)
-        .then((res) => res.json())
-        .then((data) => (this.films = data.results));
+            this.loading= true;
+            console.log("loading...")
+            fetch(`https://swapi.dev/api/films`)
+
+                .then((res) => res.json())
+                .then((data) => {
+                    this.films = data.results
+                    this.loading= false;
+                    return this.films
+                })
+                .catch((error) => {
+                  this.loading = false;
+                  this.error=true});
+
+                
+        },
     },
-  },
   computed: {
     movie() {
       const movie = this.films.find((movie) => movie.title === this.title);
